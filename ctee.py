@@ -58,6 +58,13 @@ def main():
     while (True):
 
         line = sys.stdin.readline()
+
+        if ( None == line or 0 == len ( line ) ):
+            #
+            # stdint died ?
+            #
+            break
+
         line = line.strip("\r\n")
 
         #
