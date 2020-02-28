@@ -47,13 +47,17 @@ def parse_config ( conf_file ):
 
     return (strings, color_map )
 
-def main():
+def read_loop( out_fd ):
 
     conf_file = os.path.expanduser ( "~/.ctee.conf" )
 
-    strings, color_map = parse_config( conf_file )
-
-    config_ts = os.stat ( conf_file ).st_mtime
+    if ( True == os.path.exists ( conf_file ) ):
+        config_ts = os.stat ( conf_file ).st_mtime
+        strings, color_map = parse_config( conf_file )
+    else:
+        config_ts = 0
+        strings = []
+        color_map = {}
 
     while (True):
 
@@ -85,10 +89,23 @@ def main():
         if ( DROP == color ):
             continue
 
+        if ( None != out_fd ):
+            out_fd.write ( line + "\n" )
+            out_fd.flush()
+
         if ( NONE == color ):
             print line
         else:
             console_print ( line, color )
+
+def main():
+
+
+    if ( 1 == len ( sys.argv ) ):
+        read_loop(None)
+    else:
+        with open ( sys.argv[1], "a" ) as f:
+            read_loop(f)
 
 
 if __name__ == '__main__':
