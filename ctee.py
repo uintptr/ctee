@@ -3,7 +3,9 @@
 import sys
 import os
 import re
+import io
 
+from typing import Optional
 
 BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE, NONE, DROP = range(10)
 
@@ -19,15 +21,15 @@ colors = ["BLACK",
           "DROP"]
 
 
-def console_print(text, color=WHITE):
+def console_print(text: str, color: int = WHITE):
     text = "\x1b[1;%dm" % (30 + color) + text + "\x1b[0m"
     print(text)
 
 
-def parse_config(conf_file):
+def parse_config(conf_file: str) -> tuple[list[str], dict[str, int]]:
 
-    strings = []
-    color_map = {}
+    strings: list[str] = []
+    color_map: dict[str, int] = {}
 
     print("[+] parsing {}".format(conf_file))
 
@@ -35,7 +37,7 @@ def parse_config(conf_file):
         with open(conf_file, "r") as f:
             for line in f:
                 line = line.strip("\r\n")
-                if(True == line.startswith('#') or
+                if (True == line.startswith('#') or
                         0 == len(line)):
                     continue
                 (s, c) = line.split('=')
@@ -50,7 +52,7 @@ def parse_config(conf_file):
     return (strings, color_map)
 
 
-def read_loop(out_fd):
+def read_loop(out_fd: Optional[io.IOBase] = None):
 
     conf_file = os.path.expanduser("~/.ctee.conf")
 
@@ -66,7 +68,7 @@ def read_loop(out_fd):
 
         line = sys.stdin.readline()
 
-        if (None == line or 0 == len(line)):
+        if ("" == line):
             #
             # stdint died ?
             #
@@ -93,7 +95,7 @@ def read_loop(out_fd):
         if (DROP == color):
             continue
 
-        if (None != out_fd):
+        if (out_fd is not None):
             out_fd.write(line + "\n")
             out_fd.flush()
 
@@ -106,7 +108,7 @@ def read_loop(out_fd):
 def main():
 
     if (1 == len(sys.argv)):
-        read_loop(None)
+        read_loop()
     else:
         with open(sys.argv[1], "a") as f:
             read_loop(f)
