@@ -87,7 +87,7 @@ def read_loop(out_fd: Optional[io.IOBase] = None):
         # see if the config file changed and reparse it so the user
         # doesn't have to interrupt his thing
         #
-        if(config_file is not None):
+        if (config_file is not None):
             if (config_ts != os.stat(config_file).st_mtime):
                 config_ts = os.stat(config_file).st_mtime
                 strings, color_map = parse_config(config_file)
